@@ -1,12 +1,10 @@
-// TODO: Implement validation
 'use server'
 
-import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
-import { signinSchema } from './signin-form'
 import { SignInWithPasswordlessCredentials } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/server'
+import { SigninFields } from './signin-form'
 
-export async function signin(formData: z.infer<typeof signinSchema>) {
+export async function signin(formData: SigninFields) {
   const supabase = createClient()
 
   const data = {
@@ -19,7 +17,8 @@ export async function signin(formData: z.infer<typeof signinSchema>) {
   const { error } = await supabase.auth.signInWithOtp(data)
 
   if (error) {
-    console.log(error)
-    throw new Error('Could not sign in. Please try again.')
+    throw new Error(error.code)
   }
+
+  return true
 }

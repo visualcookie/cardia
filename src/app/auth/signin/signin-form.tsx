@@ -12,34 +12,62 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/use-toast'
 import SubmitButton from '@/components/SubmitButton'
 import { signin } from './actions'
+import { signinSchema } from '@/lib/form-validations'
+import { useEffect, useState, useTransition } from 'react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertTriangleIcon } from 'lucide-react'
 
-export const signinSchema = z.object({
-  email: z.string().email(),
-})
+export type SigninFields = z.infer<typeof signinSchema>
 
 const SignInForm: React.FC = () => {
-  const form = useForm<z.infer<typeof signinSchema>>({
+  const [pending, startTransition] = useTransition()
+  const [waitCounter, setWaitCounter] = useState<number>(30)
+  const [waitingForMagicLink, setWaitingForMagicLink] = useState<boolean>(false)
+  const [signinError, setSigninError] = useState<string | null>(null)
+  const form = useForm<SigninFields>({
     resolver: zodResolver(signinSchema),
+    mode: 'onChange',
   })
 
-  const onSubmit = async (data: z.infer<typeof signinSchema>) => {
-    try {
-      await signin(data)
-      toast({
-        title: 'Magic link sent',
-        description: 'Check your email for the magic link.',
-      })
-    } catch (error) {
-      toast({
-        title: 'Sign in failed',
-        description:
-          'Could not sign in. Please check your email and try again.',
-      })
-    }
+  const onSubmit = async (formData: SigninFields) => {
+    startTransition(async () => {
+      try {
+        await signin(formData)
+      } catch (error) {
+        if (error instanceof Error) {
+          setSigninError(error.message)
+        }
+      }
+    })
   }
+
+  useEffect(() => {
+    let countdown: NodeJS.Timeout
+
+    if (!pending && !signinError) {
+      if (form.formState.isSubmitSuccessful) {
+        setWaitingForMagicLink(true)
+        const duration = waitCounter * 1000
+
+        const countdown = setTimeout(() => {
+          setWaitCounter((prevCounter) => prevCounter - 1)
+        }, 1000)
+
+        setTimeout(() => {
+          setWaitingForMagicLink(false)
+          clearInterval(countdown)
+        }, duration)
+      }
+    }
+
+    return () => {
+      if (countdown) {
+        clearInterval(countdown)
+      }
+    }
+  }, [form.formState.isSubmitSuccessful, waitCounter, pending, signinError])
 
   return (
     <Form {...form}>
@@ -52,6 +80,8 @@ const SignInForm: React.FC = () => {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
+                  autoFocus
+                  autoComplete="email"
                   type="email"
                   placeholder="johnny@minefield.com"
                   {...field}
@@ -61,11 +91,30 @@ const SignInForm: React.FC = () => {
             </FormItem>
           )}
         />
+        {signinError && (
+          <Alert variant="destructive">
+            <AlertTriangleIcon className="w-5 h-5 mr-2" />
+            <AlertDescription>{signinError}</AlertDescription>
+          </Alert>
+        )}
+        {waitingForMagicLink && (
+          <Alert>
+            <AlertDescription>
+              If an account with this email exists, you will receive a magic
+              link in your inbox.
+            </AlertDescription>
+          </Alert>
+        )}
         <SubmitButton
-          label="Request magic link"
-          labelPending="Getting your magic link"
+          label={
+            waitingForMagicLink
+              ? `Try again in ${waitCounter} seconds`
+              : `Request magic link`
+          }
           variant="default"
           className="w-full"
+          pending={pending}
+          disabled={!form.formState.isValid || waitingForMagicLink}
         />
       </form>
     </Form>

@@ -1,23 +1,22 @@
 'use client'
 
-import { useFormStatus } from 'react-dom'
+import { LoaderCircle } from 'lucide-react'
 import { Button, ButtonProps } from './ui/button'
 
 interface SubmitButtonProps extends ButtonProps {
   label?: string
-  labelPending?: string
+  pending?: boolean
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
   label = 'Submit',
-  labelPending = 'Submitting...',
+  pending = false,
   ...restProps
 }) => {
-  const { pending } = useFormStatus()
-
   return (
     <Button type="submit" variant="secondary" disabled={pending} {...restProps}>
-      {pending ? labelPending : label}
+      {pending && <LoaderCircle className="w-5 h-5 mr-2 animate-spin" />}
+      {label}
     </Button>
   )
 }

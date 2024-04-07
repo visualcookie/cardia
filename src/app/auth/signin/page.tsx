@@ -7,12 +7,13 @@ const SignInPage = () => {
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Sign up</h1>
+            <h1 className="text-3xl font-bold">Sign in</h1>
             <p className="text-balance text-muted-foreground">
               Sign in to your account.
             </p>
           </div>
           <SignInForm />
+          <p className="text-sm text-muted-foreground">{`Hint: If you don't have an account yet, this will create you an account.`}</p>
         </div>
       </div>
       <div className="hidden bg-muted lg:block">
