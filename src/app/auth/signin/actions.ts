@@ -17,8 +17,14 @@ export async function signin(formData: SigninFields) {
   const { error } = await supabase.auth.signInWithOtp(data)
 
   if (error) {
-    throw new Error(error.code)
+    return {
+      success: false,
+      message: error.code,
+    }
   }
 
-  return true
+  return {
+    success: true,
+    message: 'A magic link has been sent to your email address.',
+  }
 }

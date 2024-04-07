@@ -1,8 +1,12 @@
 'use client'
 
+import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
+import { AlertTriangleIcon } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import SubmitButton from '@/components/SubmitButton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Form,
   FormControl,
@@ -12,62 +16,66 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import SubmitButton from '@/components/SubmitButton'
-import { signin } from './actions'
 import { signinSchema } from '@/lib/form-validations'
-import { useEffect, useState, useTransition } from 'react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertTriangleIcon } from 'lucide-react'
+import { signin } from './actions'
 
 export type SigninFields = z.infer<typeof signinSchema>
 
 const SignInForm: React.FC = () => {
   const [pending, startTransition] = useTransition()
-  const [waitCounter, setWaitCounter] = useState<number>(30)
+  const [waitCounter, setWaitCounter] = useState<number>(0)
   const [waitingForMagicLink, setWaitingForMagicLink] = useState<boolean>(false)
-  const [signinError, setSigninError] = useState<string | null>(null)
+  const [signinError, setSigninError] = useState<string | undefined>(undefined)
   const form = useForm<SigninFields>({
     resolver: zodResolver(signinSchema),
     mode: 'onChange',
   })
 
   const onSubmit = async (formData: SigninFields) => {
+    setSigninError(undefined)
+    setWaitingForMagicLink(false)
+
     startTransition(async () => {
-      try {
-        await signin(formData)
-      } catch (error) {
-        if (error instanceof Error) {
-          setSigninError(error.message)
-        }
+      const { success, message } = await signin(formData)
+
+      if (!success) {
+        setSigninError(message)
+      }
+
+      if (success) {
+        setWaitCounter(30)
       }
     })
   }
 
   useEffect(() => {
+    if (signinError) {
+      setWaitingForMagicLink(false)
+      setWaitCounter(0)
+    }
+  }, [signinError])
+
+  useEffect(() => {
     let countdown: NodeJS.Timeout
 
-    if (!pending && !signinError) {
-      if (form.formState.isSubmitSuccessful) {
-        setWaitingForMagicLink(true)
-        const duration = waitCounter * 1000
+    if (form.formState.isSubmitted && waitCounter > 0) {
+      setWaitingForMagicLink(true)
+      const duration = waitCounter * 1000
 
-        const countdown = setTimeout(() => {
-          setWaitCounter((prevCounter) => prevCounter - 1)
-        }, 1000)
+      countdown = setInterval(() => {
+        setWaitCounter((prevCounter) => prevCounter - 1)
+      }, 1000)
 
-        setTimeout(() => {
-          setWaitingForMagicLink(false)
-          clearInterval(countdown)
-        }, duration)
-      }
+      setTimeout(() => {
+        setWaitingForMagicLink(false)
+        clearInterval(countdown)
+      }, duration)
     }
 
     return () => {
-      if (countdown) {
-        clearInterval(countdown)
-      }
+      clearInterval(countdown)
     }
-  }, [form.formState.isSubmitSuccessful, waitCounter, pending, signinError])
+  }, [form.formState.isSubmitted, waitCounter])
 
   return (
     <Form {...form}>
