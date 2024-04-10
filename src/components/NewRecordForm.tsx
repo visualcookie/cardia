@@ -13,23 +13,18 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
 } from './ui/form'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { toast } from './ui/use-toast'
-import { Popover, PopoverTrigger, PopoverContent } from './ui/popover'
-import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
-import { Calendar } from './ui/calendar'
+import { DateTimePicker } from './ui/date-time-picker'
 
 interface Props {
   closeDialog: () => void
 }
 
 export const newRecordSchema = z.object({
-  recordedAt: z.date().optional(),
+  recordedAt: z.date(),
   systolic: z.string().min(0).max(3),
   diastolic: z.string().min(0).max(2),
   pulse: z.string().min(0).max(3),
@@ -106,44 +101,14 @@ const NewRecordForm: React.FC<Props> = ({ closeDialog }) => {
           name="recordedAt"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>
-                Record date{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <Popover modal>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        'pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, 'PPP')
-                      ) : (
-                        <span>When did you record that?</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date('1900-01-01')
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormDescription>
-                If empty, the current date will be used.
-              </FormDescription>
+              <FormLabel>Record date</FormLabel>
+              <FormControl>
+                <DateTimePicker
+                  granularity="minute"
+                  jsDate={field.value}
+                  onJsDateChange={field.onChange}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
