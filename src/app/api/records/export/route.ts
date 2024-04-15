@@ -1,58 +1,69 @@
+import { eq } from 'drizzle-orm'
+import { Workbook } from 'exceljs'
 import { db } from '@/db'
 import { records } from '@/db/schema'
-import { eq } from 'drizzle-orm'
-import { NextRequest } from 'next/server'
-import * as XLSX from 'sheet.js'
+import { createClient } from '@/lib/supabase/server'
 
-export async function POST(req: NextRequest) {
-  const formData = await req.formData()
-  const userId = formData.get('userId') as string
+enum StatusCodes {
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  BAD_REQUEST = 'BAD_REQUEST',
+  EXPORT_FAILED = 'EXPORT_FAILED',
+  EXPORT_SUCCESS = 'EXPORT_SUCCESS',
+}
 
-  if (!userId) {
-    return Response.json(
-      {
-        title: 'Export failed',
-        message: 'User ID is required.',
-      },
-      { status: 400 }
-    )
+export async function POST(req: Request) {
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  if (!user || error) {
+    return Response.json(StatusCodes.UNAUTHORIZED, {
+      status: 401,
+    })
   }
 
-  try {
-    const dbRecords = await db.query.records.findMany({
-      where: eq(records.userId, userId),
+  const dbRecords = await db.query.records.findMany({
+    where: eq(records.userId, user.id),
+  })
+
+  if (dbRecords.length === 0) {
+    return Response.json(StatusCodes.EXPORT_FAILED, {
+      status: 400,
     })
-
-    if (dbRecords.length === 0) {
-      return Response.json(
-        {
-          title: 'Export failed',
-          message: 'We could not find any records to export.',
-        },
-        { status: 400 }
-      )
-    }
-
-    const workbook = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.json_to_sheet(dbRecords)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Records')
-    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' })
-
-    return new Response(buffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/vnd.ms-excel',
-        'Content-Disposition': `attachment; filename=records.xlsx`,
-      },
-    })
-  } catch (error) {
-    console.error(error)
-    return Response.json(
-      {
-        title: 'Export failed',
-        message: 'Could not export records. Please try again.',
-      },
-      { status: 500 }
-    )
   }
+
+  const workbook = new Workbook()
+  const worksheet = workbook.addWorksheet(`Records`)
+  worksheet.columns = [
+    { header: 'Recorded at', key: 'recordedAt', width: 20 },
+    { header: 'Systolic', key: 'systolic', width: 10 },
+    { header: 'Diastolic', key: 'diastolic', width: 10 },
+    { header: 'Pulse', key: 'pulse', width: 10 },
+  ]
+
+  dbRecords.forEach((record) => {
+    worksheet.addRow(record)
+  })
+
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true }
+  })
+
+  const buffer = await workbook.xlsx.writeBuffer()
+
+  if (buffer.byteLength === 0) {
+    return Response.json(StatusCodes.EXPORT_FAILED, {
+      status: 500,
+    })
+  }
+
+  return new Response(buffer, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/vnd.ms-excel',
+      'Content-Disposition': `attachment; filename=records.xlsx`,
+    },
+  })
 }

@@ -1,7 +1,7 @@
 'use client'
 
-import { toast } from './ui/use-toast'
 import { Button } from './ui/button'
+import { toast } from './ui/use-toast'
 
 const ExportRecords: React.FC<{ userId: string }> = ({ userId }) => {
   const handleExport = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -14,18 +14,11 @@ const ExportRecords: React.FC<{ userId: string }> = ({ userId }) => {
       }
     )
 
-    let data
-
     if (response.status !== 200) {
-      data = await response.json()
-    }
-
-    if (response.status === 400 || response.status === 500) {
-      toast({
-        title: data.title,
-        description: data.message,
+      return toast({
+        title: 'Export failed',
+        description: 'An error occurred while exporting your records.',
       })
-      return
     }
 
     toast({
