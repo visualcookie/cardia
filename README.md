@@ -1,25 +1,25 @@
-# Bloodpress
+# cardia
 
-Bloodpress is a blood pressure documentation application built with Next.js, using Drizzle as an ORM, and Supabase for authentication and database management. It allows users to easily add and track their blood pressure records.
+**cardia** is a blood pressure documentation application built with Next.js, using Drizzle as an ORM, and Supabase for authentication and database management. It allows users to easily add and track their blood pressure records.
 
 ## Getting Started
 
-To set up Bloodpress locally, follow these steps:
+To set up cardia locally, follow these steps:
 
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/visualcookie/bloodpress.git
+   git clone https://github.com/visualcookie/cardia.git
 
    OR
 
-   gh repo clone visualcookie/bloodpress
+   gh repo clone visualcookie/cardia
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd bloodpress
+   cd cardia
    ```
 
 3. Install dependencies:
@@ -50,7 +50,7 @@ To set up Bloodpress locally, follow these steps:
    bun run dev
    ```
 
-7. Open [http://localhost:3000](http://localhost:3000) in your browser to access Bloodpress.
+7. Open [http://localhost:3000](http://localhost:3000) in your browser to access cardia.
 
 ## TODO
 
