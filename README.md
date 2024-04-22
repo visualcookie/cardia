@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bloodpress
+
+Bloodpress is a blood pressure documentation application built with Next.js, using Drizzle as an ORM, and Supabase for authentication and database management. It allows users to easily add and track their blood pressure records.
 
 ## Getting Started
 
-First, run the development server:
+To set up Bloodpress locally, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Clone this repository to your local machine:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   git clone https://github.com/visualcookie/bloodpress.git
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   OR
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+   gh repo clone visualcookie/bloodpress
+   ```
 
-## Learn More
+2. Navigate to the project directory:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   cd bloodpress
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Install dependencies:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```bash
+   bun install
+   ```
 
-## Deploy on Vercel
+4. Set up your Supabase project:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - Sign up or log in to [Supabase](https://supabase.io/).
+   - Create a new project and database.
+   - Set up authentication and obtain your Supabase URL and public key.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+5. Configure environment variables:
+
+   Create a `.env.local` file in the root directory and add the following:
+
+   ```plaintext
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-public-key
+   ```
+
+6. Run the development server:
+
+   ```bash
+   bun run dev
+   ```
+
+7. Open [http://localhost:3000](http://localhost:3000) in your browser to access Bloodpress.
+
+## TODO
+
+- [ ] Add data visualization for blood pressure records.
+- [ ] Implement reminders or notifications for regular blood pressure checks.
+- [ ] Improve the export.
+
+## License
+
+This project is licensed under the "The Unlicense" license. See the [LICENSE.md](LICENSE.md) file for details.
