@@ -1,17 +1,15 @@
 {
   "name": "cardia",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate": "drizzle-kit generate:pg && node -r esbuild-register src/db/migrate.ts"
+    "migrate": "drizzle-kit generate && node -r esbuild-register src/db/migrate.ts"
   },
   "dependencies": {
-    "@auth/core": "^0.28.1",
-    "@auth/drizzle-adapter": "^0.8.1",
     "@hookform/resolvers": "^3.3.4",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -23,20 +21,20 @@
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
-    "@supabase/ssr": "^0.1.0",
-    "@supabase/supabase-js": "^2.41.1",
+    "@supabase/ssr": "^0.3.0",
+    "@supabase/supabase-js": "^2.43.5",
     "@tanstack/react-table": "^8.15.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.30.6",
+    "drizzle-orm": "^0.31.2",
     "exceljs": "^4.4.0",
-    "lucide-react": "^0.363.0",
-    "next": "14.1.4",
-    "next-auth": "beta",
-    "pg": "^8.11.3",
+    "lucide-react": "^0.395.0",
+    "next": "14.2.4",
+    "next-easy-middlewares": "^1.1.2",
+    "pg": "^8.12.0",
     "postgres": "^3.4.4",
     "react": "^18",
     "react-aria": "^3.32.1",
@@ -44,22 +42,23 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.2",
     "react-stately": "^3.30.1",
-    "tailwind-merge": "^2.2.2",
+    "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/pg": "^8.11.4",
+    "@types/pg": "^8.11.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "drizzle-kit": "^0.20.14",
+    "autoprefixer": "^10.4.19",
+    "drizzle-kit": "^0.22.7",
     "eslint": "^8",
-    "eslint-config-next": "14.1.4",
+    "eslint-config-next": "14.2.4",
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "tailwindcss": "^3.4.4",
     "typescript": "^5"
   }
 }
+

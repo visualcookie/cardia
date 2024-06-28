@@ -1,29 +1,23 @@
-import Image from 'next/image'
+import { HeartPulseIcon } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import SignInForm from './signin-form'
 
+// FIXME: Styling
 const SignInPage = () => {
   return (
-    <div className="w-full h-svh lg:grid lg:grid-cols-2">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Sign in</h1>
-            <p className="text-balance text-muted-foreground">
-              Sign in to your account.
-            </p>
-          </div>
-          <SignInForm />
-          <p className="text-sm text-muted-foreground">{`Hint: If you don't have an account yet, this will create you an account.`}</p>
+    <div className="flex flex-col items-center justify-center h-screen px-4 bg-background">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex flex-row justify-center items-center gap-4">
+          <HeartPulseIcon className="h-12 w-12 p-2 rounded-xl border bg-card text-card-foreground shadow text-black dark:text-white" />
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+            Cardia
+          </h1>
         </div>
-      </div>
-      <div className="hidden bg-muted lg:block">
-        <Image
-          src="https://static.vecteezy.com/system/resources/previews/013/707/891/original/measuring-blood-pressure-and-healthcare-concept-human-hand-wearing-tonometer-examining-checking-blood-pressure-and-heartbeat-illustration-vector.jpg"
-          alt="Image"
-          width="1920"
-          height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <SignInForm />
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

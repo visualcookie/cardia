@@ -9,20 +9,30 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
   AlertDialogFooter,
-} from './ui/alert-dialog'
+} from '@/components/ui/alert-dialog'
 import { deleteRecord } from '@/actions/records'
 
-interface Props {
+export interface DeleteRecordDialogProps {
   recordId: string
+  isOpen: boolean
+  onClose: () => void
 }
 
-const DeleteRecordDialog: React.FC<Props> = ({ recordId }) => {
+const DeleteRecordDialog: React.FC<DeleteRecordDialogProps> = ({
+  recordId,
+  isOpen,
+  onClose,
+}) => {
+  const handleDelete = async () => {
+    try {
+      await deleteRecord(recordId)
+      onClose()
+    } catch (error) {
+      console.error('Something went wrong', error)
+    }
+  }
   return (
-    <AlertDialog>
-      <AlertDialogTrigger>
-        <span className="sr-only">Delete record</span>
-        <Trash className="w-4 h-4" />
-      </AlertDialogTrigger>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
@@ -30,14 +40,12 @@ const DeleteRecordDialog: React.FC<Props> = ({ recordId }) => {
           </AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the
-            record from the database without any way to recover it.
+            record without recovery.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => deleteRecord(recordId)}>
-            Continue
-          </AlertDialogAction>
+          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

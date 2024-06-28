@@ -1,11 +1,27 @@
 {
-  "id": "6723e6e2-f2b2-4adb-96b0-27336337c267",
+  "id": "5afdf2a3-b3c1-46f4-8339-b721ae181fda",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "users": {
+    "auth.users": {
       "name": "users",
+      "schema": "auth",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "cardia.profile": {
+      "name": "profile",
       "schema": "cardia",
       "columns": {
         "id": {
@@ -20,18 +36,49 @@
           "primaryKey": false,
           "notNull": false
         },
-        "profile_picture": {
-          "name": "profile_picture",
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatar": {
+          "name": "avatar",
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "dob": {
+          "name": "dob",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weight": {
+          "name": "weight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "onboarding_completed": {
+          "name": "onboarding_completed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "users_id_users_id_fk": {
-          "name": "users_id_users_id_fk",
-          "tableFrom": "users",
+        "profile_id_users_id_fk": {
+          "name": "profile_id_users_id_fk",
+          "tableFrom": "profile",
           "tableTo": "users",
           "schemaTo": "auth",
           "columnsFrom": [
@@ -45,9 +92,17 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "profile_username_unique": {
+          "name": "profile_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      }
     },
-    "record": {
+    "cardia.record": {
       "name": "record",
       "schema": "cardia",
       "columns": {
@@ -92,10 +147,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "record_user_id_users_id_fk": {
-          "name": "record_user_id_users_id_fk",
+        "record_user_id_profile_id_fk": {
+          "name": "record_user_id_profile_id_fk",
           "tableFrom": "record",
-          "tableTo": "users",
+          "tableTo": "profile",
           "schemaTo": "cardia",
           "columnsFrom": [
             "user_id"

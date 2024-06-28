@@ -3,20 +3,26 @@
 import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { newRecordSchema } from '@/components/NewRecordForm'
+import { parse } from 'date-fns'
 import { db } from '@/db'
 import { records } from '@/db/schema'
+import { recordSchema } from '@/lib/form-validations'
 
 export async function createRecord(
   userId: string,
-  data: z.infer<typeof newRecordSchema>
+  data: z.infer<typeof recordSchema>
 ) {
   const transformData = {
-    ...data,
+    recordedAt: parse(
+      `${data.date} ${data.time}`,
+      'yyyy-MM-dd HH:mm',
+      new Date()
+    ),
     systolic: parseInt(data.systolic, 10),
     diastolic: parseInt(data.diastolic, 10),
     pulse: parseInt(data.pulse, 10),
   }
+
   const createRecord = await db
     .insert(records)
     .values({

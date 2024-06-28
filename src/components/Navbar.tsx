@@ -16,7 +16,7 @@ import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types/user'
 
 interface Props {
-  user: User
+  user: Omit<User, 'email'>
 }
 
 const Navbar: React.FC<Props> = ({ user }) => {
@@ -55,7 +55,7 @@ const Navbar: React.FC<Props> = ({ user }) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar>
-            {user.profilePicture && <AvatarImage src={user.profilePicture} />}
+            {user.avatar && <AvatarImage src={user.avatar} />}
             <AvatarFallback>{getUserInitials()}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>

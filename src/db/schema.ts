@@ -1,24 +1,40 @@
 import { relations, sql } from 'drizzle-orm'
-import { integer, pgSchema, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  integer,
+  pgSchema,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core'
 
+// Supabase Auth Schema
 export const authSchema = pgSchema('auth')
 
+// Users table in the auth schema
 export const authUsers = authSchema.table('users', {
   id: uuid('id').primaryKey().notNull(),
 })
 
+// Cardia Schema
 export const cardiaSchema = pgSchema('cardia')
 
-export const users = cardiaSchema.table('users', {
+export const profile = cardiaSchema.table('profile', {
   id: uuid('id')
     .primaryKey()
     .notNull()
     .references(() => authUsers.id, { onDelete: 'cascade' }),
-  username: text('username'),
-  profilePicture: text('profile_picture'),
+  username: text('username').unique(),
+  email: varchar('email').notNull(),
+  avatar: text('avatar'),
+  dob: timestamp('dob'),
+  weight: integer('weight'),
+  height: integer('height'),
+  onboardingCompleted: boolean('onboarding_completed').default(false).notNull(),
 })
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const profileRelations = relations(profile, ({ many }) => ({
   records: many(records),
 }))
 
@@ -28,7 +44,7 @@ export const records = cardiaSchema.table('record', {
     .notNull()
     .primaryKey(),
   userId: uuid('user_id')
-    .references(() => users.id, { onDelete: 'cascade' })
+    .references(() => profile.id, { onDelete: 'cascade' })
     .notNull(),
   systolic: integer('systolic').notNull(),
   diastolic: integer('diastolic').notNull(),
@@ -37,8 +53,8 @@ export const records = cardiaSchema.table('record', {
 })
 
 export const recordsRelations = relations(records, ({ one }) => ({
-  user: one(users, {
+  user: one(profile, {
     fields: [records.userId],
-    references: [users.id],
+    references: [profile.id],
   }),
 }))

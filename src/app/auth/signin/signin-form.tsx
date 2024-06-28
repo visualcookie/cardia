@@ -99,6 +99,7 @@ const SignInForm: React.FC = () => {
             </FormItem>
           )}
         />
+        {/* TODO: Move this logic over to the page */}
         {signinError && (
           <Alert variant="destructive">
             <AlertTriangleIcon className="w-5 h-5 mr-2" />
@@ -130,3 +131,4 @@ const SignInForm: React.FC = () => {
 }
 
 export default SignInForm
+
