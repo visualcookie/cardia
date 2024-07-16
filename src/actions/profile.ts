@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { db } from '@/db'
 import { profile } from '@/db/schema'
 import { onboardingSchema, profileSchema } from '@/lib/form-validations'
+import { redirect } from 'next/navigation'
 
 export async function updateProfile(
   userId: string,
@@ -38,6 +39,7 @@ export async function setProfile(
   const transformedData = {
     ...data,
     dob: data.dob ? new Date(data.dob) : null,
+    onboardingCompleted: true,
   }
 
   const setProfile = await db
@@ -50,5 +52,5 @@ export async function setProfile(
     throw new Error('Could not set profile data')
   }
 
-  revalidatePath('/app')
+  redirect('/app')
 }

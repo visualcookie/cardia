@@ -20,10 +20,7 @@ const AppMainPage = async () => {
     .findFirst({
       where: eq(profile.id, data.user.id),
     })
-    .then((profile) => !!profile?.username)
-    .catch(() => false)
-
-  console.debug('hasUserProfile', hasUserProfile)
+    .then((profile) => profile?.onboardingCompleted)
 
   if (!hasUserProfile) {
     redirect('/app/onboarding')
