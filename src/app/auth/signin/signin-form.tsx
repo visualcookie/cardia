@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { signinSchema } from '@/lib/form-validations'
-import { signin } from './actions'
+import { signin } from '@/actions/auth'
 
 export type SigninFields = z.infer<typeof signinSchema>
 
@@ -131,4 +131,3 @@ const SignInForm: React.FC = () => {
 }
 
 export default SignInForm
-

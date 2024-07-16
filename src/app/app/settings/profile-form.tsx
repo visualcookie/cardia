@@ -52,8 +52,10 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       dob: profileData.dob
         ? new Date(profileData.dob).toISOString().split('T')[0]
         : '',
-      weight: profileData.weight ?? '',
-      height: profileData.height ?? '',
+      weight:
+        profileData.weight !== undefined ? String(profileData.weight) : '',
+      height:
+        profileData.height !== undefined ? String(profileData.height) : '',
     })
   }, [profileData])
 

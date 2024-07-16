@@ -1,7 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import { db } from '@/db'
-import { records } from '@/db/schema'
+import { profile, records } from '@/db/schema'
 import { createClient } from '@/lib/supabase/server'
 import { RecordCard } from '@/components/RecordCard'
 import { Toolbar } from '@/components/Toolbar'
@@ -15,6 +15,21 @@ const AppMainPage = async () => {
     redirect('/auth/signin')
   }
 
+  // Check if the user has a profile, if not redirect to onboarding page
+  const hasUserProfile = await db.query.profile
+    .findFirst({
+      where: eq(profile.id, data.user.id),
+    })
+    .then((profile) => !!profile?.username)
+    .catch(() => false)
+
+  console.debug('hasUserProfile', hasUserProfile)
+
+  if (!hasUserProfile) {
+    redirect('/app/onboarding')
+  }
+
+  // Fetch all records for the current user
   const dbRecords = await db.query.records.findMany({
     where: eq(records.userId, data.user.id),
     orderBy: desc(records.recordedAt),

@@ -20,3 +20,9 @@ export const profileSchema = z.object({
   weight: z.string().optional(),
   height: z.string().optional(),
 })
+
+export const onboardingSchema = z.object({
+  username: z.string().min(3).max(20),
+  avatar: z.string().url(),
+  dob: z.string(),
+})

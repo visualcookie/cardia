@@ -1,7 +1,5 @@
-import { Trash } from 'lucide-react'
 import {
   AlertDialog,
-  AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,

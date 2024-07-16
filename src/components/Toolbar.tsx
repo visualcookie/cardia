@@ -1,9 +1,9 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Filter, SquarePlus } from 'lucide-react'
-import { AddRecordCard } from './AddRecordCard'
 import { useState } from 'react'
+import { Filter, SquarePlus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { AddRecordCard } from './AddRecordCard'
 
 export const Toolbar: React.FC<{ userId: string }> = ({ userId }) => {
   const [addRecord, setAddRecord] = useState<boolean>(false)
