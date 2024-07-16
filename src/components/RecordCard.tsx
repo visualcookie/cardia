@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import DeleteRecordDialog from './DeleteRecordDialog'
+import Badge from './Badge'
 
-// TODO: Get the actual interface
 export interface RecordCardProps {
   id: string
   systolic: number
@@ -52,7 +52,7 @@ export const RecordCard: React.FC<RecordCardProps> = ({
 
   const getSystolicStatus = (systolic: number) => {
     switch (true) {
-      case systolic < 130:
+      case systolic > 120:
         return 'Elevated'
       case systolic < 140:
         return 'Stage 1'
@@ -99,9 +99,11 @@ export const RecordCard: React.FC<RecordCardProps> = ({
           <p className="inline-flex items-center gap-2 font-bold text-3xl">
             {systolic}
             {systolicStatus && (
-              <div className="inline-flex items-center px-0.5 rounded bg-red-400 text-sm uppercase text-background">
+              <Badge
+                color={systolicStatus === 'Elevated' ? 'warning' : 'danger'}
+              >
                 {systolicStatus}
-              </div>
+              </Badge>
             )}
           </p>
           <p className="text-muted-foreground">Systolic</p>
@@ -110,9 +112,9 @@ export const RecordCard: React.FC<RecordCardProps> = ({
           <p className="inline-flex items-center gap-2 font-bold text-3xl">
             {diastolic}
             {diastolicStatus && (
-              <div className="inline-flex items-center px-0.5 rounded bg-red-400 text-sm uppercase text-background">
+              <Badge color={diastolicStatus === 'High' ? 'warning' : 'danger'}>
                 {diastolicStatus}
-              </div>
+              </Badge>
             )}
           </p>
           <p className="text-muted-foreground">Diastolic</p>
