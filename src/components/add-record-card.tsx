@@ -3,11 +3,10 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { LoaderCircle, Save, X } from 'lucide-react'
-import { z } from 'zod'
 import { format } from 'date-fns'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createRecord } from '@/actions/records'
-import { recordSchema } from '@/lib/form-validations'
+import { addUserReading } from '@/actions/records'
+import { readingFormSchema, ReadingFormData } from '@/lib/form-validations'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -22,20 +21,27 @@ export const AddRecordCard: React.FC<{
   userId: string
   onCancel: () => void
 }> = ({ userId, onCancel }) => {
-  const form = useForm<z.infer<typeof recordSchema>>({
-    resolver: zodResolver(recordSchema),
+  const form = useForm<ReadingFormData>({
+    resolver: zodResolver(readingFormSchema),
     defaultValues: {
       date: format(new Date(), 'yyyy-MM-dd'),
       time: format(new Date(), 'HH:mm'),
-      systolic: '',
-      diastolic: '',
-      pulse: '',
+      systolic: undefined,
+      diastolic: undefined,
+      pulse: undefined,
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof recordSchema>) => {
+  const onSubmit = async (data: ReadingFormData) => {
     try {
-      await createRecord(userId, data)
+      const transformedData = {
+        ...data,
+        systolic: data.systolic,
+        diastolic: data.diastolic,
+        pulse: data.pulse,
+      }
+
+      await addUserReading(userId, transformedData)
       onCancel()
     } catch (error) {
       console.error('Something went wrong', error)
@@ -82,13 +88,16 @@ export const AddRecordCard: React.FC<{
               <FormItem>
                 <FormControl>
                   <Input
+                    {...field}
                     className="outline-none focus-within:text-primary font-bold text-3xl bg-transparent"
                     placeholder="120"
                     size={3}
                     autoFocus
                     tabIndex={1}
                     maxLength={3}
-                    {...field}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                   />
                 </FormControl>
                 <FormMessage />
@@ -105,12 +114,16 @@ export const AddRecordCard: React.FC<{
               <FormItem>
                 <FormControl>
                   <Input
+                    {...field}
                     className="bg-transparent outline-none focus-within:text-primary font-bold text-3xl"
                     placeholder="80"
                     size={3}
-                    tabIndex={2}
+                    autoFocus
+                    tabIndex={1}
                     maxLength={3}
-                    {...field}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                   />
                 </FormControl>
                 <FormMessage />
@@ -127,12 +140,16 @@ export const AddRecordCard: React.FC<{
               <FormItem>
                 <FormControl>
                   <Input
+                    {...field}
                     className="bg-transparent outline-none focus-within:text-primary font-bold text-3xl"
                     placeholder="80"
                     size={3}
-                    tabIndex={3}
+                    autoFocus
+                    tabIndex={1}
                     maxLength={3}
-                    {...field}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                   />
                 </FormControl>
                 <FormMessage />

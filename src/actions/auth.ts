@@ -1,30 +1,23 @@
 'use server'
 
-import { SignInWithPasswordlessCredentials } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/server'
+import { AuthError } from 'next-auth'
+import { signIn } from '@/auth'
 
-export async function signin(formData: { email: string }) {
-  const supabase = createClient()
-
-  const data = {
-    email: formData.email,
-    options: {
-      emailRedirectTo: process.env.NEXT_PUBLIC_BASE_URL + '/auth/confirm',
-    },
-  } satisfies SignInWithPasswordlessCredentials
-
-  const { error } = await supabase.auth.signInWithOtp(data)
-
-  if (error) {
+export async function signinAction(formData: { email: string }) {
+  try {
+    await signIn('resend', formData)
     return {
-      success: false,
-      message: error.code,
+      status: 'success',
+      message: `A magic link has been sent to ${formData.email}`,
     }
-  }
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return {
+        status: 'error',
+        message: error.message,
+      }
+    }
 
-  return {
-    success: true,
-    message: 'A magic link has been sent to your email address.',
+    throw error
   }
 }
-

@@ -1,8 +1,8 @@
 import { HeartPulseIcon } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import SignInForm from './signin-form'
+import Link from 'next/link'
 
-const SignInPage = () => {
+const VerifyRequestPage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen px-4 bg-background">
       <div className="w-full max-w-md space-y-6">
@@ -14,7 +14,11 @@ const SignInPage = () => {
         </div>
         <Card>
           <CardContent className="p-6 space-y-4">
-            <SignInForm />
+            <p>A sign in link has been sent to your email address.</p>
+            <p>
+              If the email did not arrive,{' '}
+              <Link href="#">click here to send again</Link>.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -22,4 +26,4 @@ const SignInPage = () => {
   )
 }
 
-export default SignInPage
+export default VerifyRequestPage

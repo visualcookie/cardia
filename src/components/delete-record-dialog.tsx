@@ -8,7 +8,7 @@ import {
   AlertDialogAction,
   AlertDialogFooter,
 } from '@/components/ui/alert-dialog'
-import { deleteRecord } from '@/actions/records'
+import { deleteUserReading } from '@/actions/records'
 
 export interface DeleteRecordDialogProps {
   recordId: string
@@ -23,7 +23,7 @@ const DeleteRecordDialog: React.FC<DeleteRecordDialogProps> = ({
 }) => {
   const handleDelete = async () => {
     try {
-      await deleteRecord(recordId)
+      await deleteUserReading(recordId)
       onClose()
     } catch (error) {
       console.error('Something went wrong', error)

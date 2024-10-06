@@ -1,8 +1,9 @@
 'use client'
 
-import { HeartPulse, LogOut } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { User } from 'next-auth'
+import { signOut } from 'next-auth/react'
+import { HeartPulse, LogOut } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import {
   DropdownMenu,
@@ -12,35 +13,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { createClient } from '@/lib/supabase/client'
-import { User } from '@/types/user'
 
-interface Props {
-  user: Omit<User, 'email'>
+interface NavbarProps {
+  user?: User
 }
 
-const Navbar: React.FC<Props> = ({ user }) => {
-  const supabase = createClient()
-  const router = useRouter()
-
+const Navbar: React.FC<NavbarProps> = ({ user }) => {
   const getUserInitials = (): string => {
-    const name = user.username ?? ''
+    const name = user?.name ?? ''
     const initials = name
       .split(' ')
       .map((n) => n[0])
       .join('')
     return initials.toUpperCase()
-  }
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      console.error('Error logging out:', error.message)
-      return
-    }
-
-    router.push('/auth/signin')
   }
 
   return (
@@ -55,7 +40,7 @@ const Navbar: React.FC<Props> = ({ user }) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar>
-            {user.avatar && <AvatarImage src={user.avatar} />}
+            {user?.image && <AvatarImage src={user.image} />}
             <AvatarFallback>{getUserInitials()}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -67,7 +52,7 @@ const Navbar: React.FC<Props> = ({ user }) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="bg-red-950 focus:bg-red-800"
-            onClick={handleLogout}
+            onClick={() => signOut()}
           >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Logout</span>

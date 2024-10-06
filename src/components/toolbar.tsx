@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Filter, SquarePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { AddRecordCard } from './AddRecordCard'
+import { AddRecordCard } from './add-record-card'
 
 export const Toolbar: React.FC<{ userId: string }> = ({ userId }) => {
   const [addRecord, setAddRecord] = useState<boolean>(false)

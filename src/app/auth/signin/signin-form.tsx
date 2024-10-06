@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form'
 import { AlertTriangleIcon } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import SubmitButton from '@/components/SubmitButton'
+import { signinSchema } from '@/lib/form-validations'
+import { signinAction } from '@/actions/auth'
+import SubmitButton from '@/components/submit-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Form,
@@ -16,8 +18,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { signinSchema } from '@/lib/form-validations'
-import { signin } from '@/actions/auth'
 
 export type SigninFields = z.infer<typeof signinSchema>
 
@@ -36,13 +36,13 @@ const SignInForm: React.FC = () => {
     setWaitingForMagicLink(false)
 
     startTransition(async () => {
-      const { success, message } = await signin(formData)
+      const { status, message } = await signinAction(formData)
 
-      if (!success) {
+      if (status === 'error') {
         setSigninError(message)
       }
 
-      if (success) {
+      if (status === 'success') {
         setWaitCounter(30)
       }
     })
@@ -99,7 +99,6 @@ const SignInForm: React.FC = () => {
             </FormItem>
           )}
         />
-        {/* TODO: Move this logic over to the page */}
         {signinError && (
           <Alert variant="destructive">
             <AlertTriangleIcon className="w-5 h-5 mr-2" />

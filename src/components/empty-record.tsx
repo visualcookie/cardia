@@ -3,19 +3,16 @@
 import { useState } from 'react'
 import { SquarePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { AddRecordCard } from './AddRecordCard'
+import { AddRecordCard } from './add-record-card'
 
-export interface EmptyRecordProps {
-  userId: string
-}
-
-export const EmptyRecord: React.FC<EmptyRecordProps> = ({ userId }) => {
+export const EmptyRecord: React.FC<{ userId: string }> = ({ userId }) => {
   const [creating, setCreating] = useState<boolean>(false)
 
   return !creating ? (
     <div className="flex flex-row items-center justify-center p-4 shadow rounded-md border bg-card">
       <p className="text-muted-foreground">
-        It seems like you don&apos;t have any recordings yet.
+        You haven&apos;t recorded any blood pressure readings yet. Start
+        tracking your cardiovascular health today!
       </p>
       <Button variant="link" onClick={() => setCreating(true)}>
         <SquarePlus className="mr-2 h-4 w-4" />

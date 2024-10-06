@@ -9,18 +9,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import DeleteRecordDialog from './DeleteRecordDialog'
-import Badge from './Badge'
+import DeleteRecordDialog from './delete-record-dialog'
 
 export interface RecordCardProps {
   id: string
   systolic: number
   diastolic: number
   pulse: number
-  recordedAt: Date
+  createdAt: Date | null
 }
 
-const Options: React.FC<{ onDelete: () => void }> = ({ onDelete }) => (
+const Options: React.FC<{ onDelete: () => void; onEdit: () => void }> = ({
+  onDelete,
+  onEdit,
+}) => (
   <DropdownMenu>
     <DropdownMenuTrigger>
       <Button>
@@ -29,7 +31,7 @@ const Options: React.FC<{ onDelete: () => void }> = ({ onDelete }) => (
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
-      <DropdownMenuItem>
+      <DropdownMenuItem onClick={onEdit}>
         <Edit3 className="mr-2 h-4 w-4" />
         <span>Edit</span>
       </DropdownMenuItem>
@@ -46,44 +48,11 @@ export const RecordCard: React.FC<RecordCardProps> = ({
   systolic,
   diastolic,
   pulse,
-  recordedAt,
+  createdAt,
 }) => {
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
-
-  const getSystolicStatus = (systolic: number) => {
-    switch (true) {
-      case systolic > 120:
-        return 'Elevated'
-      case systolic < 140:
-        return 'Stage 1'
-      case systolic < 160:
-        return 'Stage 2'
-      case systolic < 180:
-        return 'Stage 3'
-      default:
-        return false
-    }
-  }
-
-  const getDiastolicStatus = (diastolic: number) => {
-    switch (true) {
-      case diastolic < 85:
-        return 'High'
-      case diastolic < 90:
-        return 'Stage 1'
-      case diastolic < 100:
-        return 'Stage 2'
-      case diastolic < 110:
-        return 'Stage 3'
-      default:
-        return false
-    }
-  }
-
-  const formattedDate = new Date(recordedAt).toLocaleDateString()
-  const formattedTime = new Date(recordedAt).toLocaleTimeString()
-  const systolicStatus = getSystolicStatus(systolic)
-  const diastolicStatus = getDiastolicStatus(systolic)
+  const formattedDate = new Date(createdAt!).toLocaleDateString()
+  const formattedTime = new Date(createdAt!).toLocaleTimeString()
 
   return (
     <>
@@ -98,24 +67,12 @@ export const RecordCard: React.FC<RecordCardProps> = ({
         <div className="flex flex-col min-w-24">
           <p className="inline-flex items-center gap-2 font-bold text-3xl">
             {systolic}
-            {systolicStatus && (
-              <Badge
-                color={systolicStatus === 'Elevated' ? 'warning' : 'danger'}
-              >
-                {systolicStatus}
-              </Badge>
-            )}
           </p>
           <p className="text-muted-foreground">Systolic</p>
         </div>
         <div className="flex flex-col min-w-24">
           <p className="inline-flex items-center gap-2 font-bold text-3xl">
             {diastolic}
-            {diastolicStatus && (
-              <Badge color={diastolicStatus === 'High' ? 'warning' : 'danger'}>
-                {diastolicStatus}
-              </Badge>
-            )}
           </p>
           <p className="text-muted-foreground">Diastolic</p>
         </div>
@@ -124,7 +81,10 @@ export const RecordCard: React.FC<RecordCardProps> = ({
           <p className="text-muted-foreground">Pulse</p>
         </div>
         <div className="flex flex-col">
-          <Options onDelete={() => setDeleteDialog(true)} />
+          <Options
+            onEdit={() => console.log('to be implemented')}
+            onDelete={() => setDeleteDialog(true)}
+          />
         </div>
       </div>
 
