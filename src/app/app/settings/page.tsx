@@ -1,14 +1,28 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { auth } from '@/auth'
+import SettingsForm from '@/components/settings-form'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card'
 
 const SettingsPage = async () => {
+  const session = await auth()
+
   return (
-    <div className="flex justify-center">
-      <Card className="w-full max-w-lg">
+    <div className="flex flex-col gap-4">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Account Settings</CardTitle>
+          <CardTitle>Your settings</CardTitle>
+          <CardDescription>
+            Manage your account settings, customize your profile, and set
+            communication preferences.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          {/* <OnboardingForm /> */}
+        <CardContent>
+          <SettingsForm user={session?.user} />
         </CardContent>
       </Card>
     </div>

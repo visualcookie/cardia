@@ -1,44 +1,27 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { newRecordSchema } from '@/components/NewRecordForm'
-import { db } from '@/db'
-import { records } from '@/db/schema'
+import { readingFormSchema } from '@/lib/form-validations'
+import { addReading, deleteReadingById } from '@/lib/db/queries'
 
-export async function createRecord(
+export async function addUserReading(
   userId: string,
-  data: z.infer<typeof newRecordSchema>
+  data: z.infer<typeof readingFormSchema>
 ) {
-  const transformData = {
-    ...data,
-    systolic: parseInt(data.systolic, 10),
-    diastolic: parseInt(data.diastolic, 10),
-    pulse: parseInt(data.pulse, 10),
-  }
-  const createRecord = await db
-    .insert(records)
-    .values({
-      ...transformData,
-      userId,
-    })
-    .returning()
+  const reading = await addReading(userId, data)
 
-  if (!createRecord) {
+  if (!reading) {
     throw new Error('Could not create record')
   }
 
   revalidatePath('/app')
 }
 
-export async function deleteRecord(recordId: string) {
-  const deleteRecord = await db
-    .delete(records)
-    .where(eq(records.id, recordId))
-    .returning()
+export async function deleteUserReading(recordId: string) {
+  const reading = await deleteReadingById(recordId)
 
-  if (!deleteRecord) {
+  if (!reading) {
     throw new Error('Could not delete record')
   }
 

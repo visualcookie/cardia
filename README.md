@@ -54,9 +54,16 @@ To set up cardia locally, follow these steps:
 
 ## TODO
 
-- [ ] Add data visualization for blood pressure records.
-- [ ] Implement reminders or notifications for regular blood pressure checks.
-- [ ] Improve the export.
+- [ ] Add data visualization for blood pressure records
+- [ ] Implement reminders for regular blood pressure checks
+- [ ] Improve the export
+- [ ] Add import from CSV
+- [ ] Add filter to stages
+- [ ] Group data by day/date
+- [ ] Add filter by date range
+- [ ] Display last 10 records
+- [ ] Add "Load more" functionality
+- [ ] Settings page
 
 ## License
 
