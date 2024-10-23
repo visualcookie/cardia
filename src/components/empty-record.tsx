@@ -9,12 +9,12 @@ export const EmptyRecord: React.FC<{ userId: string }> = ({ userId }) => {
   const [creating, setCreating] = useState<boolean>(false)
 
   return !creating ? (
-    <div className="flex flex-row items-center justify-center p-4 shadow rounded-md border bg-card">
+    <div className="flex flex-row items-center justify-center gap-4 p-4 shadow rounded-md border bg-card">
       <p className="text-muted-foreground">
         You haven&apos;t recorded any blood pressure readings yet. Start
         tracking your cardiovascular health today!
       </p>
-      <Button variant="link" onClick={() => setCreating(true)}>
+      <Button onClick={() => setCreating(true)}>
         <SquarePlus className="mr-2 h-4 w-4" />
         <span>Add record</span>
       </Button>

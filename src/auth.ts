@@ -8,7 +8,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: '/auth/signin',
     verifyRequest: '/auth/verify-request',
-    // newUser: '',
+    newUser: '/app/new-user',
   },
   adapter: DrizzleAdapter(db),
   providers: [Resend({ from: 'noreply@cardia.sloth.sh' })],

@@ -1,4 +1,5 @@
-import { createMiddleware } from '@rescale/nemo'
+import { createMiddleware, MiddlewareFunctionProps } from '@rescale/nemo'
+import { auth } from './auth'
 
 const middlewares = {}
 

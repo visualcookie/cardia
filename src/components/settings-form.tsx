@@ -21,13 +21,23 @@ import { useToast } from './ui/use-toast'
 
 interface SettingsFormProps {
   user?: User
+  isNewUser?: boolean
 }
 
-const SettingsForm: React.FC<SettingsFormProps> = ({ user }) => {
+const SettingsForm: React.FC<SettingsFormProps> = ({ user, isNewUser }) => {
   const { toast } = useToast()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [avatarUrl, setAvatarUrl] = useState<string | null | undefined>(null)
+
+  const form = useForm<any>({
+    resolver: zodResolver(userSettingsSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      avatar: '',
+    },
+  })
 
   useEffect(() => {
     if (user) {
@@ -36,19 +46,10 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user }) => {
     }
   }, [user])
 
-  const form = useForm<any>({
-    resolver: zodResolver(userSettingsSchema),
-    defaultValues: {
-      username: '',
-      email: '',
-      avatar: '',
-    },
-  })
-
   useEffect(() => {
     if (user) {
       form.reset({
-        username: user.name ?? '',
+        name: user.name ?? '',
         email: user.email ?? '',
         avatar: user.image ?? '',
       })
@@ -87,10 +88,10 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user }) => {
         />
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Your name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -103,7 +104,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user }) => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Your email</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
@@ -112,7 +113,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user }) => {
           )}
         />
         <SubmitButton
-          label="Update settings"
+          label={!isNewUser ? 'Update settings' : 'Save profile'}
           disabled={
             form.formState.isSubmitting ||
             form.formState.isDirty ||

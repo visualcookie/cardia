@@ -5,7 +5,7 @@ export const signinSchema = z.object({
 })
 
 export const userSettingsSchema = z.object({
-  username: z.string(),
+  name: z.string(),
   email: z.string().email(),
 })
 
