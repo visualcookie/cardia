@@ -18,10 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`dark bg-zinc-900 text-zinc-100 ${inter.className}`}>
+      <body className={`dark bg-background ${inter.className}`}>
         {children}
         <Toaster />
       </body>
     </html>
   )
 }
+
