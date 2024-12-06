@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import DeleteRecordDialog from './delete-record-dialog'
+import { AddRecordCard } from './add-record-card'
 
 export interface RecordCardProps {
   id: string
@@ -51,42 +52,60 @@ export const RecordCard: React.FC<RecordCardProps> = ({
   createdAt,
 }) => {
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+  const [editing, setEditing] = useState<boolean>(false)
   const formattedDate = new Date(createdAt!).toLocaleDateString()
   const formattedTime = new Date(createdAt!).toLocaleTimeString()
 
   return (
     <>
-      <div
-        key={id}
-        className="flex flex-row items-center justify-between p-4 shadow rounded-md border bg-card hover:border-primary transition-colors duration-200 ease-in-out"
-      >
-        <div className="flex flex-col text-muted-foreground min-w-24">
-          <p className="font-bold text-primary">{formattedDate}</p>
-          <p className="text-sm">{formattedTime}</p>
+      {!editing && (
+        <div
+          key={id}
+          className="flex flex-row items-center justify-between p-4 shadow rounded-md border bg-card hover:border-primary transition-colors duration-200 ease-in-out"
+        >
+          <div className="flex flex-col text-muted-foreground min-w-24">
+            <p className="font-bold text-primary">{formattedDate}</p>
+            <p className="text-sm">{formattedTime}</p>
+          </div>
+          <div className="flex flex-col min-w-24">
+            <p className="inline-flex items-center gap-2 font-bold text-3xl">
+              {systolic}
+            </p>
+            <p className="text-muted-foreground">Systolic</p>
+          </div>
+          <div className="flex flex-col min-w-24">
+            <p className="inline-flex items-center gap-2 font-bold text-3xl">
+              {diastolic}
+            </p>
+            <p className="text-muted-foreground">Diastolic</p>
+          </div>
+          <div className="flex flex-col min-w-24">
+            <p className="font-bold text-3xl">{pulse}</p>
+            <p className="text-muted-foreground">Pulse</p>
+          </div>
+          <div className="flex flex-col">
+            <Options
+              onEdit={() => setEditing(true)}
+              onDelete={() => setDeleteDialog(true)}
+            />
+          </div>
         </div>
-        <div className="flex flex-col min-w-24">
-          <p className="inline-flex items-center gap-2 font-bold text-3xl">
-            {systolic}
-          </p>
-          <p className="text-muted-foreground">Systolic</p>
-        </div>
-        <div className="flex flex-col min-w-24">
-          <p className="inline-flex items-center gap-2 font-bold text-3xl">
-            {diastolic}
-          </p>
-          <p className="text-muted-foreground">Diastolic</p>
-        </div>
-        <div className="flex flex-col min-w-24">
-          <p className="font-bold text-3xl">{pulse}</p>
-          <p className="text-muted-foreground">Pulse</p>
-        </div>
-        <div className="flex flex-col">
-          <Options
-            onEdit={() => console.log('to be implemented')}
-            onDelete={() => setDeleteDialog(true)}
-          />
-        </div>
-      </div>
+      )}
+
+      {editing && (
+        <AddRecordCard
+          valueId={id}
+          values={{
+            systolic,
+            diastolic,
+            pulse,
+            createdAt: new Date(createdAt!),
+            date: formattedDate,
+            time: formattedTime,
+          }}
+          onCancel={() => setEditing(false)}
+        />
+      )}
 
       <DeleteRecordDialog
         recordId={id}

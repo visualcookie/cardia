@@ -28,6 +28,18 @@ export const addReading = async (
   return record
 }
 
+export const updateReadingById = async (
+  id: string,
+  data: z.infer<typeof readingFormSchema>
+) => {
+  const record = await db
+    .update(readings)
+    .set(data)
+    .where(eq(readings.id, id))
+    .returning()
+  return record
+}
+
 export const deleteReadingById = async (id: string) => {
   const record = await db.query.readings.findFirst({
     where: eq(readings.id, id),

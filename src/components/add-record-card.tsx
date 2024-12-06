@@ -2,11 +2,12 @@
 
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { LoaderCircle, Save, X } from 'lucide-react'
+import { AlertCircle, LoaderCircle, Save, X } from 'lucide-react'
 import { format } from 'date-fns'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { addUserReading } from '@/actions/records'
+import { addUserReading, updateUserReading } from '@/actions/records'
 import { readingFormSchema, ReadingFormData } from '@/lib/form-validations'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -16,19 +17,44 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
-export const AddRecordCard: React.FC<{
-  userId: string
-  onCancel: () => void
-}> = ({ userId, onCancel }) => {
+type AddRecordCardProps =
+  | {
+      userId: string
+      valueId?: never
+      values?: ReadingFormData
+      onCancel: () => void
+    }
+  | {
+      userId?: never
+      valueId: string
+      values?: ReadingFormData
+      onCancel: () => void
+    }
+
+export const AddRecordCard: React.FC<AddRecordCardProps> = ({
+  userId,
+  valueId,
+  values,
+  onCancel,
+}) => {
   const form = useForm<ReadingFormData>({
     resolver: zodResolver(readingFormSchema),
     defaultValues: {
-      date: format(new Date(), 'yyyy-MM-dd'),
-      time: format(new Date(), 'HH:mm'),
-      systolic: undefined,
-      diastolic: undefined,
-      pulse: undefined,
+      date: format(new Date(values?.createdAt || new Date()), 'yyyy-MM-dd'),
+      time: format(new Date(values?.createdAt || new Date()), 'HH:mm'),
+      // @ts-expect-error - TODO: fix this
+      systolic: values?.systolic?.toString() || undefined,
+      // @ts-expect-error - TODO: fix this
+      diastolic: values?.diastolic?.toString() || undefined,
+      // @ts-expect-error - TODO: fix this
+      pulse: values?.pulse?.toString() || undefined,
     },
   })
 
@@ -41,7 +67,12 @@ export const AddRecordCard: React.FC<{
         pulse: data.pulse,
       }
 
-      await addUserReading(userId, transformedData)
+      if (!!valueId) {
+        await updateUserReading(valueId, transformedData)
+      } else {
+        await addUserReading(userId!, transformedData)
+      }
+
       onCancel()
     } catch (error) {
       console.error('Something went wrong', error)
@@ -80,84 +111,61 @@ export const AddRecordCard: React.FC<{
             )}
           />
         </div>
-        <div className="flex flex-col min-w-24">
-          <FormField
-            control={form.control}
-            name="systolic"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="outline-none focus-within:text-primary font-bold text-3xl bg-transparent"
-                    placeholder="120"
-                    size={3}
-                    autoFocus
-                    tabIndex={1}
-                    maxLength={3}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <p className="text-muted-foreground">Systolic</p>
-        </div>
-        <div className="flex flex-col min-w-24">
-          <FormField
-            control={form.control}
-            name="diastolic"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="bg-transparent outline-none focus-within:text-primary font-bold text-3xl"
-                    placeholder="80"
-                    size={3}
-                    autoFocus
-                    tabIndex={1}
-                    maxLength={3}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <p className="text-muted-foreground">Diastolic</p>
-        </div>
-        <div className="flex flex-col min-w-24">
-          <FormField
-            control={form.control}
-            name="pulse"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="bg-transparent outline-none focus-within:text-primary font-bold text-3xl"
-                    placeholder="80"
-                    size={3}
-                    autoFocus
-                    tabIndex={1}
-                    maxLength={3}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <p className="text-muted-foreground">Pulse</p>
-        </div>
+        {['systolic', 'diastolic', 'pulse'].map((name) => (
+          <div key={name} className="flex flex-col min-w-24">
+            <FormField
+              control={form.control}
+              name={name as keyof ReadingFormData}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        value={field.value?.toString() || ''}
+                        className={cn(
+                          'bg-transparent outline-none focus-within:text-primary font-bold text-3xl',
+                          form.formState.errors[
+                            name as keyof ReadingFormData
+                          ] && 'border-destructive'
+                        )}
+                        placeholder={name === 'systolic' ? '120' : '80'}
+                        size={3}
+                        autoFocus
+                        tabIndex={1}
+                        maxLength={3}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
+                      {form.formState.errors[name as keyof ReadingFormData] && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <AlertCircle className="h-4 w-4 text-destructive absolute right-2 top-1/2 transform -translate-y-1/2" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {
+                                  form.formState.errors[
+                                    name as keyof ReadingFormData
+                                  ]?.message
+                                }
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <p className="text-muted-foreground">
+              {name.charAt(0).toUpperCase() + name.slice(1)}
+            </p>
+          </div>
+        ))}
         <div className="flex flex-row gap-2">
           <Button
             type="submit"

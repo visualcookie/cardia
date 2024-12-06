@@ -3,7 +3,11 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { readingFormSchema } from '@/lib/form-validations'
-import { addReading, deleteReadingById } from '@/lib/db/queries'
+import {
+  addReading,
+  deleteReadingById,
+  updateReadingById,
+} from '@/lib/db/queries'
 
 export async function addUserReading(
   userId: string,
@@ -18,11 +22,24 @@ export async function addUserReading(
   revalidatePath('/app')
 }
 
+export async function updateUserReading(
+  id: string,
+  data: z.infer<typeof readingFormSchema>
+) {
+  const reading = await updateReadingById(id, data)
+
+  if (!reading) {
+    throw new Error(`Could not update record ${id}`)
+  }
+
+  revalidatePath('/app')
+}
+
 export async function deleteUserReading(recordId: string) {
   const reading = await deleteReadingById(recordId)
 
   if (!reading) {
-    throw new Error('Could not delete record')
+    throw new Error(`Could not delete record ${recordId}`)
   }
 
   revalidatePath('/app')
